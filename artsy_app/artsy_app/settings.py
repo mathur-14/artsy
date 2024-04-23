@@ -11,6 +11,15 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import pymongo
+
+# MongoDB connection settings
+MONGO_URI = 'mongodb://localhost:27017/'
+MONGO_DB = 'artsy_artworks'
+
+# MongoDB client setup
+mongo_client = pymongo.MongoClient(MONGO_URI)
+db = mongo_client[MONGO_DB]
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -74,12 +83,12 @@ WSGI_APPLICATION = "artsy_app.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
+# }
 
 
 # Password validation
