@@ -1,4 +1,3 @@
-Absolutely, here's the content in markdown format:
 
 ---
 
@@ -17,9 +16,9 @@ Absolutely, here's the content in markdown format:
    python manage.py startapp artworks
    ```
 
-3. **Install the `requests` package for making HTTP requests:**
+3. **Install the packages:**
    ```bash
-   pip install requests
+   pip install requirements.txt
    ```
 
 4. **Run the Django development server on port 5000:**
