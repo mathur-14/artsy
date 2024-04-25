@@ -21,7 +21,12 @@
    pip install requirements.txt
    ```
 
-4. **Run the Django development server on port 5000:**
+4. **To set up cron job:**
+   ```bash
+   python manage.py crontab add
+   ```
+
+5. **Run the Django development server on port 5000:**
    ```bash
    python manage.py runserver 0.0.0.0:5000
    ```
