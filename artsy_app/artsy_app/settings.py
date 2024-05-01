@@ -82,7 +82,7 @@ MIDDLEWARE = [
 
 # Run the cron job every 6 hours
 CRONJOBS = [
-    ('*/30 * * * *', 'artsy_app.cron_job.run_cron_job')
+    ('* */6 * * *', 'artsy_app.cron_job.run_cron_job')
 ]
 
 ROOT_URLCONF = "artsy_app.urls"
