@@ -65,6 +65,7 @@ def fetch_artworks():
     # Process the fetched artworks
     process_artworks(artworks_data)
 
+# TODO: Add artists when updated/created
 def process_artworks(artworks_data):
     for artwork_data in artworks_data:
         artwork_id = artwork_data['id']
