@@ -37,9 +37,9 @@
 - [http://localhost:5000/artworks/put-artworks/](http://localhost:5000/artworks/put-artworks/)
 - [http://localhost:5000/artworks/get-paginated-artworks/](http://localhost:5000/artworks/get-paginated-artworks/)
 - [http://localhost:5000/artworks/get-artists/](http://localhost:5000/artworks/get-artists/)
-- [http://localhost:5000/artworks/get-artwork-id/<str:id>/](http://localhost:5000/artworks/get-artwork-id/<str:id>/)
-- [http://localhost:5000/artworks/get-artworks-category/<str:category>/](http://localhost:5000/artworks/get-artworks-category/<str:category>/)
-- [http://localhost:5000/artworks/get-artworks-by-artist/<str:artist_id>/](http://localhost:5000/artworks/get-artworks-by-artist/<str:artist_id>/)
+- [http://localhost:5000/artworks/get-artwork-id/:id/](http://localhost:5000/artworks/get-artwork-id/:id/)
+- [http://localhost:5000/artworks/get-artworks-category/:category/](http://localhost:5000/artworks/get-artworks-category/:category/)
+- [http://localhost:5000/artworks/get-artworks-by-artist/:artist_id>/](http://localhost:5000/artworks/get-artworks-by-artist/:artist_id/)
 - [http://localhost:5000/artworks/get-categories/](http://localhost:5000/artworks/get-categories/)
 
 ---

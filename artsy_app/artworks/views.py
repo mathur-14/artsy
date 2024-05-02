@@ -149,29 +149,6 @@ def get_artist_details(session, artwork):
         if retry_count == max_retries:
             print(f"Maximum retries ({max_retries}) exceeded for artists URL: {artists_url}")
 
-def get_artists(request):
-    # Get the user token by calling the get_token function
-    token_response = get_token(request)
-    token_data = json.loads(token_response.content)
-    user_token = token_data.get('token', None)
-
-    if user_token is None:
-        return JsonResponse({'error': 'Failed to obtain user token'})
-    
-    session = setup_session()
-    session.headers.update({'X-XAPP-Token': user_token})
-
-    # API endpoint to get artists
-    artists_url = 'https://api.artsy.net/api/artists'
-
-    # Make a GET request with the user token in the header
-    response = session.get(artists_url)
-    if response.status_code == 200:
-        artists_data = response.json()
-        return JsonResponse(artists_data)
-    else:
-        return JsonResponse({'error': f'Failed to fetch artists. Status code: {response.status_code}'})
-
 def put_artworks(request):
     # Get the user token by calling the get_token function
     token_response = get_token(request)
