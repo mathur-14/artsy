@@ -162,10 +162,10 @@ def get_artist_details(session, artwork):
                     {
                         'id': artist.get('id'),
                         'name': artist.get('name'),
-                        'gender': artist.get('gender'),
-                        'birthday': artist.get('birthday'),
-                        'deathday': artist.get('deathday'),
-                        'nationality': artist.get('nationality'),
+                        'gender': artist.get('gender', None),
+                        'birthday': artist.get('birthday', None),
+                        'deathday': artist.get('deathday', None),
+                        'nationality': artist.get('nationality', None),
                         'artworks': artist.get('_links', {}).get('artworks', {}).get('href', None),
                         'similar_artists': artist.get('_links', {}).get('similar_artists', {}).get('href', None)
                     }
@@ -262,59 +262,21 @@ def put_artworks(request):
     except Exception as e:
         return JsonResponse({'message': 'Failed to insert records to the mongodb', 'error': str(e)}, status = 500)
 
-# def put_artists(request):
-#     # Get the user token by calling the get_token function
-#     token_response = get_token(request)
-#     token_data = json.loads(token_response.content)
-#     user_token = token_data.get('token', None)
+def get_artists(request):
+    collection = db['artworks']
 
-#     if user_token is None:
-#         return JsonResponse({'error': 'Failed to obtain user token'})
-    
-#     session = setup_session()
-#     session.headers.update({'X-XAPP-Token': user_token})
-    
-#     # API endpoint to get artists
-#     artists_url = 'https://api.artsy.net/api/artists'
-#     artists_data = []
-#     print('here you are')
-#     count=0
-#     # Loop through paginated results
-#     while artists_url:
-#         retry_count = 0
-#         max_retries = 3
-#         retry_delay = 1  # Initial delay in seconds
-#         print(count,':',artists_url)
-#         count+=1
-#         while retry_count < max_retries:
-#             response = session.get(artists_url)
-#             if response.status_code == 200:
-#                 break
-#             else:
-#                 retry_count += 1
-#                 retry_delay *= 2  # Double the delay for the next retry
-#                 print(f"Request failed with status code {response.status_code}. Retrying in {retry_delay} seconds...")
-#                 time.sleep(retry_delay)
+    # Query to get a list of unique artists with names and IDs
+    pipeline = [
+        {"$unwind": "$artists"},
+        {"$group": {"_id": {"name": "$artists.name", "id": "$artists.id"}, "count": {"$sum": 1}}},
+        {"$project": {"artist_name": "$_id.name", "artist_id": "$_id.id", "_id": 0}}
+    ]
 
-#         if retry_count == max_retries:
-#             print(f"Maximum retries ({max_retries}) exceeded. Skipping to the next page.")
-#             next_page = None
-#         else:
-#             data = response.json()
+    result = collection.aggregate(pipeline)
 
-#             # Extract artists from the current page
-#             artists = data.get('_embedded', {}).get('artists', [])
-#             artists_data.extend(artists)
+    # Store unique artists in a list
+    unique_artists = []
+    for artist in result:
+        unique_artists.append({"name": artist["artist_name"], "id": artist["artist_id"]})
 
-#             # Get the next page URL
-#             next_page = data.get('_links', {}).get('next', {}).get('href', None)
-
-#         artists_url = next_page
-#     print('here I am')
-#     # Store artists in MongoDB
-#     collection = db['artists']
-#     try:
-#         result = collection.insert_many(artists_data)
-#         return JsonResponse({'message': f'{len(result.inserted_ids)} artists added to MongoDB'})
-#     except Exception as e:
-#         return JsonResponse({'message': 'Failed to insert records to the mongodb', 'error': str(e)}, status = 500)
+    return JsonResponse(unique_artists, safe=False)

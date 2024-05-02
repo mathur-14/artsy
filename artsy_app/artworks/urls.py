@@ -8,5 +8,5 @@ urlpatterns = [
     path('get-paginated-artworks/', views.get_paginated_artworks, name='get_paginated_artworks'),
     path('get-artwork-id/<str:id>/', views.get_artwork_by_id, name='get_artwork_by_id'),
     path('get-artwork-category/<str:category>/', views.get_artwork_by_category, name='get_artwork_by_category'),
-    # path('put-artists/', views.put_artists, name='put_artists'),
+    path('get-artists/', views.get_artists, name='get_artists'),
 ]
