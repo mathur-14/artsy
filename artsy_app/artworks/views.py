@@ -74,7 +74,7 @@ def get_paginated_artworks(request):
 
     return JsonResponse(response_data)
 
-def get_artwork(request, id):
+def get_artwork_by_id(request, id):
     collection = db['artworks']
 
     projection = {
