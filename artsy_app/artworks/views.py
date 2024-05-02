@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+from django.core.paginator import Paginator
 from .helper import setup_session
 import subprocess
 from artsy_app.settings import db
@@ -27,29 +28,79 @@ def get_token(request):
         print(f"Failed to obtain XAPP Token: {e}")
         print(e.stderr)  # Display error output
         return None
-
-def get_artworks(request):
-    # Get the user token by calling the get_token function
-    token_response = get_token(request)
-    token_data = json.loads(token_response.content)
-    user_token = token_data.get('token', None)
-
-    if user_token is None:
-        return JsonResponse({'error': 'Failed to obtain user token'})
     
-    session = setup_session()
-    session.headers.update({'X-XAPP-Token': user_token})
+def get_paginated_artworks(request):
+    collection = db['artworks']
 
-    # API endpoint to get artworks
-    artworks_url = 'https://api.artsy.net/api/artworks?total_count=1'
+    projection = {
+        '_id': 0,
+        'id': 1,
+        'slug': 1,
+        'title': 1,
+        'category': 1,
+        'additional_information': 1,
+        'medium': 1,
+        'date': 1,
+        'dimensions': 1,
+        'artists': 1,
+        'thumbnail': '_links.thumbnail.href',
+        'self': '_links.self.href',
+        'similar_artworks': '_links.similar_artworks.href',
+    }
 
-    # Make a GET request with the user token in the header
-    response = session.get(artworks_url)
-    if response.status_code == 200:
-        artworks_data = response.json()
-        return JsonResponse(artworks_data)
+    # Get the page number from the request query parameters
+    page_number = int(request.GET.get('page', 1))
+    page_size = 10
+
+    # Get the total count of artworks
+    total_artworks = collection.count_documents({})
+
+    # Retrieve artworks from MongoDB with pagination
+    artworks = list(collection.find({}, projection).skip((page_number - 1) * page_size).limit(page_size))
+
+    # Create a Paginator instance
+    paginator = Paginator(artworks, page_size)
+
+    # Get the current page of artworks
+    page_obj = paginator.get_page(page_number)
+
+    # Prepare the response data
+    response_data = {
+        'count': total_artworks,
+        'next': (page_number * page_size) < total_artworks,
+        'previous': page_number > 1,
+        'results': list(page_obj.object_list)
+    }
+
+    return JsonResponse(response_data)
+
+def get_artwork(request, id):
+    collection = db['artworks']
+
+    projection = {
+        '_id': 0,
+        'id': 1,
+        'slug': 1,
+        'title': 1,
+        'category': 1,
+        'additional_information': 1,
+        'medium': 1,
+        'date': 1,
+        'dimensions': 1,
+        'artists': 1,
+        'thumbnail': '_links.thumbnail.href',
+        'self': '_links.self.href',
+        'similar_artworks': '_links.similar_artworks.href',
+    }
+
+    # Retrieve artworks from MongoDB with pagination
+    artwork = collection.find_one({'id': id}, projection)
+
+    # Prepare the response data
+    if(artwork):
+        return JsonResponse(artwork)
     else:
-        return JsonResponse({'error': f'Failed to fetch artworks. Status code: {response.status_code}'})
+        return JsonResponse({'message': f'Could not find any artwork with id: ${id}'})
 
 def get_artist_details(session, artwork):
     artists_url = artwork.get('_links', {}).get('artists', {}).get('href', None)
