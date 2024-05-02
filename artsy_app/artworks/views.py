@@ -102,6 +102,51 @@ def get_artwork_by_id(request, id):
     else:
         return JsonResponse({'message': f'Could not find any artwork with id: ${id}'})
 
+def get_artwork_by_category(request, category):
+    collection = db['artworks']
+
+    projection = {
+        '_id': 0,
+        'id': 1,
+        'slug': 1,
+        'title': 1,
+        'category': 1,
+        'additional_information': 1,
+        'medium': 1,
+        'date': 1,
+        'dimensions': 1,
+        'artists': 1,
+        'thumbnail': '_links.thumbnail.href',
+        'self': '_links.self.href',
+        'similar_artworks': '_links.similar_artworks.href',
+    }
+
+    # Get the page number from the request query parameters
+    page_number = int(request.GET.get('page', 1))
+    page_size = 10
+
+    # Get the total count of artworks
+    total_artworks = collection.count_documents({'category': category})
+
+    # Retrieve artworks from MongoDB with pagination
+    artworks = list(collection.find({'category': category}, projection).skip((page_number - 1) * page_size).limit(page_size))
+
+    # Create a Paginator instance
+    paginator = Paginator(artworks, page_size)
+
+    # Get the current page of artworks
+    page_obj = paginator.get_page(page_number)
+
+    # Prepare the response data
+    response_data = {
+        'count': total_artworks,
+        'next': (page_number * page_size) < total_artworks,
+        'previous': page_number > 1,
+        'results': list(page_obj.object_list)
+    }
+
+    return JsonResponse(response_data)
+
 def get_artist_details(session, artwork):
     artists_url = artwork.get('_links', {}).get('artists', {}).get('href', None)
     if artists_url:
