@@ -253,3 +253,37 @@ def get_artworks_by_artist(request, artist_id):
     }
 
     return JsonResponse(response_data)
+
+def get_artworks_by_period(request, period):
+    collection = db['artworks']
+
+    # Get the page number from the request query parameters
+    page_number = int(request.GET.get('page', 1))
+    page_size = 10
+
+    start_date, end_date = map(str.strip, period.split('-'))
+    query = {"date": {
+        "$gte": start_date,
+        "$lte": end_date
+    }}
+    # Get the total count of artworks
+    total_artworks = collection.count_documents(query)
+
+    # Retrieve artworks from MongoDB with pagination
+    artworks = list(collection.find(query, artwork_projection).skip((page_number - 1) * page_size).limit(page_size))
+
+    # Create a Paginator instance
+    paginator = Paginator(artworks, page_size)
+
+    # Get the current page of artworks
+    page_obj = paginator.get_page(page_number)
+
+    # Prepare the response data
+    response_data = {
+        'count': total_artworks,
+        'next': (page_number * page_size) < total_artworks,
+        'previous': page_number > 1,
+        'results': list(page_obj.object_list)
+    }
+
+    return JsonResponse(response_data)

@@ -1,3 +1,4 @@
 requests
 pymongo
 django-crontab
+django-cors-headers
