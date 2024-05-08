@@ -9,5 +9,6 @@ urlpatterns = [
     path('get-artwork-id/<str:id>/', views.get_artwork_by_id, name='get_artwork_by_id'),
     path('get-artworks-category/<str:category>/', views.get_artwork_by_category, name='get_artwork_by_category'),
     path('get-artworks-by-artist/<str:artist_id>', views.get_artworks_by_artist, name='get_artworks_by_artist'),
+    path('get-artworks-by-period/<str:period>', views.get_artworks_by_period, name='get_artworks_by_period'),
     path('get-categories/', views.get_categories, name='get_categories'),
 ]
