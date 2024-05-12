@@ -557,7 +557,7 @@ def recommended_investments(request):
     recommended_investments_list = [row["id"] for row in investments_filtered_df_ordered.collect()]
     return recommended_investments_list
 
-def keywords_search(request, keywords):
+def get_artworks_by_keyword(request, keyword):
     spark = SparkSession \
     .builder \
     .appName("keywords_search") \
@@ -570,7 +570,7 @@ def keywords_search(request, keywords):
     .option('uri','mongodb://localhost:27017/Final_Project.artworks_words')\
     .load()
 
-    words = keywords.split()
+    words = keyword.split()
     words = [word.lower() for word in words]
     keywords_list = words
     keywords_set = set(keywords_list)

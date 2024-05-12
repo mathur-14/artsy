@@ -21,5 +21,5 @@ urlpatterns = [
     path('recommended_favourites/', views.recommended_favourites, name='recommended_favourites'),
     path('recommended_investments/', views.recommended_investments, name='recommended_investments'),
     path('investments_data/', views.investments_data, name='investments_data'),
-    path('keywords_search/', views.keywords_search, name='keywords_search'),
+    path('get-artworks-by-keyword/<str:keyword>/', views.get_artworks_by_keyword, name='get-artworks-by-keyword'),
 ]
